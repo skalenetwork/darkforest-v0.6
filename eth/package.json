@@ -74,6 +74,7 @@
     "hardhat:dev": "hardhat --network localhost",
     "hardhat:prod": "hardhat --network xdai",
     "hardhat:mainnet": "hardhat --network mainnet",
+    "hardhat:chaos": "hardhat --network chaos_skale",
     "compile": "hardhat compile",
     "circom:prod": "hardhat circom --verbose",
     "circom:dev": "hardhat circom --deterministic --verbose",
@@ -84,7 +85,10 @@
     "clean": "del-cli artifacts cache subgraph/build node_modules tsconfig.ref.tsbuildinfo",
     "wait:node": "wait-on tcp:8545",
     "deploy:contracts": "hardhat --network localhost deploy",
+    "deploy:contracts_chaos": "hardhat --network chaos_skale deploy",
     "hardhat:deploy": "run-s wait:node \"deploy:contracts {@}\" --",
-    "start": "run-p hardhat:node \"hardhat:deploy {@}\" --"
+    "hardhat:deploy_chaos": "run-s wait:node \"deploy:contracts_chaos {@}\" --",
+    "start": "run-p hardhat:node \"hardhat:deploy {@}\" --",
+    "start_chaos": "run-p hardhat:node \"hardhat:deploy_chaos {@}\" --"
   }
 }

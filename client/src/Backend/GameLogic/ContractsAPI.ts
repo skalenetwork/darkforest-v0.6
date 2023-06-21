@@ -41,10 +41,9 @@ import {
   TxIntent,
   VoyageId,
 } from '@darkforest_eth/types';
-import { BigNumber as EthersBN, ContractFunction, Event, providers } from 'ethers';
+import { BigNumber as EthersBN, ContractFunction, ethers, Event, providers } from 'ethers';
 import { EventEmitter } from 'events';
 import _ from 'lodash';
-import NotificationManager from '../../Frontend/Game/NotificationManager';
 import { openConfirmationWindowForTransaction } from '../../Frontend/Game/Popups';
 import { getSetting } from '../../Frontend/Utils/SettingsHooks';
 import {
@@ -152,13 +151,16 @@ export class ContractsAPI extends EventEmitter {
 
     const balance = await this.ethConnection.loadBalance(address);
 
-    if (balance.lt(ContractsAPI.MIN_BALANCE)) {
+    console.log('skale balance ' + balance);
+    console.log('skale balance balance.lt(ContractsAPI.MIN_BALANCE) ' + ContractsAPI.MIN_BALANCE);
+
+    /* if (balance.lt(ContractsAPI.MIN_BALANCE)) {
       const notifsManager = NotificationManager.getInstance();
       notifsManager.balanceEmpty();
       throw new Error('xDAI balance too low!');
-    }
+    }*/
 
-    const gasFeeGwei = EthersBN.from(overrides?.gasPrice || '1000000000');
+    const gasFeeGwei = EthersBN.from(overrides?.gasPrice || '100000');
 
     await openConfirmationWindowForTransaction({
       contractAddress: this.contractAddress,
@@ -867,7 +869,17 @@ export class ContractsAPI extends EventEmitter {
     txIntent: T,
     overrides?: providers.TransactionRequest
   ): Promise<Transaction<T>> {
-    const queuedTx = await this.txExecutor.queueTransaction(txIntent, overrides);
+    console.log(overrides);
+    const provider = new ethers.providers.JsonRpcProvider(
+      'https://staging-v3.skalenodes.com/v1/staging-fast-active-bellatrix'
+    );
+
+    const gasprice = await provider.getGasPrice();
+    const overrides_2: providers.TransactionRequest = {
+      gasPrice: gasprice,
+      gasLimit: 5000000,
+    };
+    const queuedTx = await this.txExecutor.queueTransaction(txIntent, overrides_2);
 
     this.emit(ContractsAPIEvent.TxQueued, queuedTx);
     // TODO: Why is this setTimeout here? Can it be removed?

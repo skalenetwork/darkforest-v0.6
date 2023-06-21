@@ -173,7 +173,12 @@ export function TopBar({ twitterVerifyHook }: { twitterVerifyHook: Hook<boolean>
   const player = usePlayer(uiManager);
   const account = player.value?.address;
   const twitter = player.value?.twitter;
+
+  //console.log('uiManager.getMyBalance$() ' + uiManager.getMyBalance$());
+  //console.log('uiManager.getMyBalanceBn() ' + uiManager.getMyBalanceBn());
+
   const balance = useEmitterValue(uiManager.getMyBalance$(), uiManager.getMyBalanceBn());
+  // console.log('balance ' + balance);
 
   let captureZones = null;
   if (uiManager.captureZonesEnabled) {
@@ -198,7 +203,7 @@ export function TopBar({ twitterVerifyHook }: { twitterVerifyHook: Hook<boolean>
           name={TooltipName.Empty}
           extraContent={<Text>Your burner wallet balance.</Text>}
         >
-          <Sub>({weiToEth(balance).toFixed(2)} xDAI)</Sub>
+          <Sub>({weiToEth(balance).toFixed(5)} sFUEL)</Sub>
         </TooltipTrigger>
         {process.env.DF_WEBSERVER_URL && (
           <>

@@ -18,14 +18,16 @@ export async function loadDiamondContract<T extends Contract>(
 
 export function getEthConnection(): Promise<EthConnection> {
   const isProd = process.env.NODE_ENV === 'production';
-  const defaultUrl = process.env.DEFAULT_RPC as string;
+  //const defaultUrl = process.env.DEFAULT_RPC as string;
 
   let url: string;
 
   if (isProd) {
-    url = localStorage.getItem('XDAI_RPC_ENDPOINT_v5') || defaultUrl;
+    //  url = localStorage.getItem('XDAI_RPC_ENDPOINT_v5') || defaultUrl;
+    url = 'https://staging-v3.skalenodes.com/v1/staging-fast-active-bellatrix';
   } else {
-    url = 'http://localhost:8545';
+    //url = 'http://localhost:8545';
+    url = 'https://staging-v3.skalenodes.com/v1/staging-fast-active-bellatrix';
   }
 
   console.log(`GAME METADATA:`);

@@ -22,7 +22,12 @@ async function deploy(
   args: { whitelist?: boolean; fund: number; subgraph?: string },
   hre: HardhatRuntimeEnvironment
 ) {
+  console.log('WHITELIST STATE ' + args.whitelist);
   const isDev = hre.network.name === 'localhost' || hre.network.name === 'hardhat';
+  //const isDev = true;
+  //console.log('isDev ' + isDev);
+
+  //isDev = true;
 
   let whitelistEnabled: boolean;
   if (typeof args.whitelist === 'undefined') {
@@ -31,6 +36,8 @@ async function deploy(
   } else {
     whitelistEnabled = args.whitelist;
   }
+
+  // console.log('whitelistEnabled ' + whitelistEnabled);
 
   // Ensure we have required keys in our initializers
   settings.required(hre.initializers, ['PLANETHASH_KEY', 'SPACETYPE_KEY', 'BIOMEBASE_KEY']);
@@ -42,7 +49,7 @@ async function deploy(
   // Is deployer of all contracts, but ownership is transferred to ADMIN_PUBLIC_ADDRESS if set
   const [deployer] = await hre.ethers.getSigners();
 
-  const requires = hre.ethers.utils.parseEther('2.1');
+  /*const requires = hre.ethers.utils.parseEther('2.1');
   const balance = await deployer.getBalance();
 
   // Only when deploying to production, give the deployer wallet money,
@@ -53,7 +60,7 @@ async function deploy(
         requires
       )} but has ${hre.ethers.utils.formatEther(balance)} top up and rerun`
     );
-  }
+  }*/
 
   const [diamond, diamondInit, initReceipt] = await deployAndCut(
     { ownerAddress: deployer.address, whitelistEnabled, initializers: hre.initializers },
@@ -70,7 +77,7 @@ async function deploy(
   );
 
   // Note Ive seen `ProviderError: Internal error` when not enough money...
-  console.log(`funding whitelist with ${args.fund}`);
+  /* console.log(`funding whitelist with ${args.fund}`);
 
   const tx = await deployer.sendTransaction({
     to: diamond.address,
@@ -80,7 +87,7 @@ async function deploy(
 
   console.log(
     `Sent ${args.fund} to diamond contract (${diamond.address}) to fund drips in whitelist facet`
-  );
+  );*/
 
   // give all contract administration over to an admin adress if was provided
   if (hre.ADMIN_PUBLIC_ADDRESS) {
@@ -120,7 +127,7 @@ async function saveDeploy(
   hre: HardhatRuntimeEnvironment
 ) {
   const isDev = hre.network.name === 'localhost' || hre.network.name === 'hardhat';
-
+  //const isDev = true;
   // Save the addresses of the deployed contracts to the `@darkforest_eth/contracts` package
   const tsContents = dedent`
   /**
@@ -212,6 +219,7 @@ export async function deployAndCut(
   hre: HardhatRuntimeEnvironment
 ) {
   const isDev = hre.network.name === 'localhost' || hre.network.name === 'hardhat';
+  //const isDev = true;
 
   const changes = new DiamondChanges();
 
@@ -246,15 +254,26 @@ export async function deployAndCut(
   const coreFacet = await deployCoreFacet({}, libraries, hre);
   const moveFacet = await deployMoveFacet({}, libraries, hre);
   const captureFacet = await deployCaptureFacet({}, libraries, hre);
+  console.log('debug_manel 7 ');
+
   const artifactFacet = await deployArtifactFacet(
     { diamondAddress: diamond.address },
     libraries,
     hre
   );
+  console.log('debug_manel 8 ');
+
   const getterFacet = await deployGetterFacet({}, libraries, hre);
+  console.log('debug_manel 9 ');
   const whitelistFacet = await deployWhitelistFacet({}, libraries, hre);
+  console.log('debug_manel whitelistFacet ' + whitelistFacet);
   const verifierFacet = await deployVerifierFacet({}, libraries, hre);
+  console.log('debug_manel 10 ');
+
   const adminFacet = await deployAdminFacet({}, libraries, hre);
+
+  console.log('debug_manel 11 ');
+
   const lobbyFacet = await deployLobbyFacet({}, {}, hre);
   const rewardFacet = await deployRewardFacet({}, {}, hre);
 
@@ -274,6 +293,9 @@ export async function deployAndCut(
 
   if (isDev) {
     const debugFacet = await deployDebugFacet({}, libraries, hre);
+
+    //console.log('ISDEV darkForestFacetCuts ' + darkForestFacetCuts);
+
     darkForestFacetCuts.push(...changes.getFacetCuts('DFDebugFacet', debugFacet));
   }
 
@@ -286,6 +308,8 @@ export async function deployAndCut(
       ? 'https://nft-test.zkga.me/token-uri/artifact/'
       : 'https://nft.zkga.me/token-uri/artifact/'
   }${hre.network.config?.chainId || 'unknown'}-${diamond.address}/`;
+
+  console.log('debug_manel tokenBaseUri ' + tokenBaseUri);
 
   // EIP-2535 specifies that the `diamondCut` function takes two optional
   // arguments: address _init and bytes calldata _calldata
@@ -356,6 +380,8 @@ export async function deployWhitelistFacet({}, {}: Libraries, hre: HardhatRuntim
   const contract = await factory.deploy();
   await contract.deployTransaction.wait();
   console.log(`DFWhitelistFacet deployed to: ${contract.address}`);
+  console.log('debug_manel address ' + contract.address);
+
   return contract;
 }
 

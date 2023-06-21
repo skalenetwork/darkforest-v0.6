@@ -93,6 +93,13 @@ const config: HardhatUserConfig = {
     // > Error HH100: Network xdai doesn't exist
     ...(DEPLOYER_MNEMONIC ? { xdai } : undefined),
     ...(DEPLOYER_MNEMONIC ? { mainnet } : undefined),
+    chaos_skale: {
+      url: 'https://staging-v3.skalenodes.com/v1/staging-fast-active-bellatrix',
+      accounts: {
+        mnemonic: 'change typical hire slam amateur loan grid fix drama electric seed label',
+      },
+      chainId: 1351057110,
+    },
     localhost: {
       url: 'http://localhost:8545/',
       accounts: {
@@ -105,6 +112,10 @@ const config: HardhatUserConfig = {
     hardhat: {
       accounts: [
         // from/deployer is default the first address in accounts
+        {
+          privateKey: '0xe0329fa3997003b6ac8c52a62dbc9901c8efccd65a126316abbd5c79527b81f8',
+          balance: '100000000000000000000',
+        },
         {
           privateKey: '0x044C7963E9A89D4F8B64AB23E02E97B2E00DD57FCB60F316AC69B77135003AEF',
           balance: '100000000000000000000',
